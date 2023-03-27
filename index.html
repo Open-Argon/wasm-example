@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Argon WASM Runtime Example</title>
-        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
 
         <link
             rel="apple-touch-icon"
@@ -39,6 +39,10 @@
         <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
         <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
             .terminal {
                 font-family: monospace;
                 font-size: 12px;
@@ -51,18 +55,6 @@
                 min-height: 250px;
                 max-width: 500px;
                 overflow-x: auto;
-            }
-            .terminal * {
-                min-height: 1rem;
-            }
-            .terminal .command {
-                color: #0f0;
-            }
-            .terminal .output {
-                color: #fff;
-            }
-            .terminal .error {
-                color: #f00;
             }
             .editbox {
                 font-family: monospace;
@@ -98,6 +90,8 @@
             }
         </style>
         <script src="argon_wasm.js"></script>
+        <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
+        <script src="node_modules/xterm/lib/xterm.js"></script>
     </head>
     <body>
         <h1>Argon WASM Runtime Example</h1>
@@ -110,37 +104,27 @@
         >
 term.log("hello world")</textarea
         >
-        <pre
-            id="terminal"
-            class="terminal"
-        ><div>                                        ____  </div><div>     /\                                |___ \ </div><div>    /  \   _ __ __ _  ___  _ __   __   ____) |</div><div>   / /\ \ | '__/ _` |/ _ \| '_ \  \ \ / /__ &lt; </div><div>  / ____ \| | | (_| | (_) | | | |  \ V /___) |</div><div> /_/    \_\_|  \__, |\___/|_| |_|   \_/|____/ </div><div>                __/ |                         </div><div>               |___/                          </div><div>----------------------------------------------</div><div>Welcome to ARGON for WASM!</div><div>write code above and click run to see it work like magic!</div></pre>
+        <div id="terminal"></div>
         <script>
-            const output = document.getElementById("terminal");
+            var term = new Terminal();
+            term.open(document.getElementById("terminal"));
             const editbox = document.getElementById("editbox");
             const run = document.getElementById("run");
             run.addEventListener("click", async () => {
-                output.innerHTML = "";
+                term.clear()
                 setTimeout(() => Ar.eval(editbox.value, true), 0);
             });
 
             const runAr = ArgonWASMRuntime({
                 console: {
                     log: (...msg) => {
-                        const p = document.createElement("div");
-                        p.innerText = msg.join(" ");
-                        output.appendChild(p);
+                        term.writeln(msg.join(" "));
                     },
                     warn: (...msg) => {
-                        const p = document.createElement("div");
-                        p.innerText = msg.join(" ");
-                        p.style.color = "orange";
-                        output.appendChild(p);
+                        term.writeln("\x1B[1;3;31mWARN:",msg.join(" ")+ "\x1B[0m");
                     },
                     error: (...msg) => {
-                        const p = document.createElement("div");
-                        p.innerText = msg.join(" ");
-                        p.style.color = "red";
-                        output.appendChild(p);
+                        term.writeln('\x1B[1;3;31mERROR:',msg.join(" ")+ "\x1B[0m");
                     },
                 },
             });
