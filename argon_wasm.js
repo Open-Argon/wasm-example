@@ -30,7 +30,6 @@ window.ArgonWASMRuntime = async (config = {}) => {
         return err;
     };
     if (!global.fs) {
-        let outputBuf = "";
         global.fs = {
             constants: {
                 O_WRONLY: -1,
@@ -41,12 +40,7 @@ window.ArgonWASMRuntime = async (config = {}) => {
                 O_EXCL: -1,
             }, // unused
             writeSync(fd, buf) {
-                outputBuf += decoder.decode(buf);
-                const nl = outputBuf.lastIndexOf("\n");
-                if (nl != -1) {
-                    term.log(outputBuf.slice(0, nl));
-                    outputBuf = outputBuf.slice(nl + 1);
-                }
+                term.write(decoder.decode(buf).replace('\n', '\n\r'));
                 return buf.length;
             },
             write(fd, buf, offset, length, position, callback) {
