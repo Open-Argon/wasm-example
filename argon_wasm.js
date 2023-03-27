@@ -40,7 +40,8 @@ window.ArgonWASMRuntime = async (config = {}) => {
                 O_EXCL: -1,
             }, // unused
             writeSync(fd, buf) {
-                term.write(decoder.decode(buf).replace('\n', '\n\r'));
+                const text = decoder.decode(buf).split("\n").join("\n\r");
+                term.write(text);
                 return buf.length;
             },
             write(fd, buf, offset, length, position, callback) {
