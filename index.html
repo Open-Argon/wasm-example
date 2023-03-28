@@ -114,17 +114,7 @@ term.log("hello world")</textarea
                 term.write("\x1Bc");
                 setTimeout(() => Ar.eval(editbox.value, true), 0);
             });
-
-            let datafunc = null;
-            term.onData((data) => {
-                if (datafunc) {
-                    datafunc(data);
-                    datafunc = null;
-                }
-            });
-            var getData = ()=>new Promise((resolve, reject)=>{
-                datafunc = resolve;
-            });
+            var getInput = (message)=>prompt(message);
             const runAr = ArgonWASMRuntime({
                 console: {
                     log: (...msg) => {
