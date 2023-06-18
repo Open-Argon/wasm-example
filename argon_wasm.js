@@ -1,4 +1,4 @@
-window.ArgonWASMRuntime = async (config = {}) => {
+var ArgonWASMRuntime = async (config = {}) => {
     const term = config.console || console;
     const path = config.path || "bin/argon.wasm";
     if (typeof global !== "undefined") {
